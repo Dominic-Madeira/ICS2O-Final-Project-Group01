@@ -8,9 +8,7 @@
 
 class SplashScene extends Phaser.Scene {
   constructor() {
-    super({ key: "splashScene" });
-
-    this.splashSceneBackgroundImage = null;
+    super({ key: "splashScene" })
   }
 
   /**
@@ -20,7 +18,7 @@ class SplashScene extends Phaser.Scene {
    *@param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
    */
   init(data) {
-    this.cameras.main.setBackgroundColor("#ffffff");
+    this.cameras.main.setBackgroundColor("#ffffff")
   }
 
   /**
@@ -28,7 +26,7 @@ class SplashScene extends Phaser.Scene {
    * Use it to load assets.
    */
   preload() {
-    console.log("Splash Scene");
+    console.log("Splash Scene")
   }
 
   /**
@@ -37,6 +35,7 @@ class SplashScene extends Phaser.Scene {
    * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
    */
   create(data) {
+    //pass
   }
 
   /**
@@ -46,10 +45,8 @@ class SplashScene extends Phaser.Scene {
    * @param {number} delta - The delta time in ms since the last frame.
    */
   update(time, delta) {
-    // if (time > 3000) {
-    //   this.scene.switch("titleScene");
-    // }
+    this.scene.switch("titleScene");
   }
 }
 
-export default SplashScene;
+export default SplashScene
