@@ -40,9 +40,9 @@ class TitleScene extends Phaser.Scene {
    * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
    */
   create (data) {
-    this.titleSceneBackgroundImage = this.add.sprite(0, 0, 'titleSceneBackground').setScale(2.75)
-    this.titleSceneBackgroundImage.x = 1920 / 2
-    this.titleSceneBackgroundImage.y = 1080 / 2
+    // this.titleSceneBackgroundImage = this.add.sprite(0, 0, 'titleSceneBackground').setScale(2.75)
+    // this.titleSceneBackgroundImage.x = 1920 / 2
+    // this.titleSceneBackgroundImage.y = 1080 / 2
 
     this.titleScene = this.add.text(1920 / 2, (1080 / 2) + 350, 'Space Aliens', this.titleSceneStyle).setOrigin(0.5)
   }
