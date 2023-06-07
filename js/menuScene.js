@@ -8,7 +8,7 @@
 
 class MenuScene extends Phaser.Scene {
     constructor () {
-      super({ key:'menuScene'})
+      super({ key:'menuScene' })
   
       this.menuSceneBackgroundImage = null
       this.startButton = null
@@ -30,7 +30,7 @@ class MenuScene extends Phaser.Scene {
      */
     preload () {
       console.log('Menu Scene')
-    //   this.load.image('menuSceneBackground', './assets/aliens_screen_image2.jpg')
+      this.load.image('menuSceneBackground', './assets/background.png')
       this.load.image('startButton', './assets/userInterface/startButton.png')
     }
   
@@ -40,10 +40,12 @@ class MenuScene extends Phaser.Scene {
      * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
      */
     create (data) {
-    //   this.menuSceneBackgroundImage = this.add.sprite(0, 0, 'menuSceneBackground')
-    //   this.menuSceneBackgroundImage.x = 1920 / 2
-    //   this.menuSceneBackgroundImage.y = 1080 / 2
+      // Place background on the screen
+      this.menuSceneBackgroundImage = this.add.sprite(0, 0, 'menuSceneBackground')
+      this.menuSceneBackgroundImage.x = 1920 / 2
+      this.menuSceneBackgroundImage.y = 1080 / 2
   
+      // Place button in the middle of the screen
       this.startButton = this.add.sprite(1920 / 2, (1080 / 2) + 100, 'startButton')
       this.startButton.setInteractive({ useHandCursor: true })
       this.startButton.on('pointerdown', () => this.clickButton())
