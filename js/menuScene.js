@@ -62,6 +62,24 @@ class MenuScene extends Phaser.Scene {
       this.startButton.on('pointerdown', () => this.clickButton())
       this.startButton.setScale(1.5)
 
+      // Add pipes
+      this.menuPipe = this.add.sprite(1920 / 6, 1080 - 292, 'testPipe');
+      this.menuPipe.setFrame(0)
+      this.menuPipe.setScale(4.5)
+
+      this.menuPipe2 = this.add.sprite(1920 / 6, 1080 - 450 * 2, 'testPipe');
+      this.menuPipe2.setFrame(0)
+      this.menuPipe2.setScale(4.5)
+
+      this.menuPipe3 = this.add.sprite(1920 - (1920 / 6), 1080 - 450 * 2, 'testPipe');
+      this.menuPipe3.setFrame(1)
+      this.menuPipe3.setScale(4.5)
+
+      this.menuPipe4 = this.add.sprite(1920 - (1920 / 6), 1080 - 292, 'testPipe');
+      this.menuPipe4.setFrame(1)
+      this.menuPipe4.setScale(4.5)
+
+
       // Add floor
       this.floor = this.add.sprite(1920 / 2, 1080 - 30, 'floor')
       this.floor2 = this.add.sprite(1920 / 6, 1080 - 30, 'floor')
@@ -77,11 +95,6 @@ class MenuScene extends Phaser.Scene {
       // Add bird image
       this.birdImage = this.add.sprite(1920 / 2, 1080 / 2 - 100, 'birdImage')
       this.birdImage.setScale(6)
-
-      // Add pipes
-      this.sprite = this.add.sprite(1920 / 2, 1080 / 2, 'testPipe');
-      this.sprite.setFrame(1);
-      this.sprite.setScale(5)
     }
   
     /**
