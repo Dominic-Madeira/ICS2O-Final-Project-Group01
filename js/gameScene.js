@@ -15,6 +15,21 @@ class GameScene extends Phaser.Scene {
     this.pipeGroup.add(topPipe)
     this.pipeGroup.add(bottomPipe)
   }
+
+  birdJump () {
+    const keySpaceObj = this.input.keyboard.addKey('SPACE')
+    if (keySpaceObj.isDown === true) {
+      if (this.jump === false) {
+        this.jump = true
+        this.sound.play('wing')
+      }
+    }
+
+    if (keySpaceObj.isUp === true) {
+      wait(500)
+      this.jump = false
+    }
+  }
   
     constructor () {
       super({ key:'gameScene'})
@@ -85,9 +100,8 @@ class GameScene extends Phaser.Scene {
      * @param {number} delta - The delta time in ms since the last frame.
      */
     update (time, delta) {
-        const keySpaceObj = this.input.keyboard.addKey('SPACE')
-    }
+        this.birdJump()
   }
-  
-  export default GameScene
+}
+export default GameScene
   
