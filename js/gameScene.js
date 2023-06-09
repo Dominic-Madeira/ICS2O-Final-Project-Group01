@@ -9,11 +9,15 @@
 class GameScene extends Phaser.Scene {
 
   createPipe () {
-    const holeLocation = Math.floor(Math.random() * 780) + 201 // this will get a number between 200 and 980
-    const topPipe = this.physics.add.sprite(2000, holeLocation -100, 'topPipe')
-    const bottomPipe = this.physics.add.sprite(2000, holeLocation +100, 'bottomPipe')
+    let pipeColor = ""
+    // 50/50 chance for pipe color to be green or orange
+    
+    const holePosition = Phaser.Math.Between(100, screenHeight - 100)
+    const topPipe = this.physics.add.sprite(game.config.width, holePosition - tubeSpacing, 'topPipe')
+    const bottomPipe = this.physics.add.sprite(game.config.width, holePosition + tubeSpacing, 'bottomPipe')
     this.pipeGroup.add(topPipe)
     this.pipeGroup.add(bottomPipe)
+    this.pipeGroup.body.velocity.x = -200
   }
 
   birdJump () {
@@ -39,7 +43,7 @@ class GameScene extends Phaser.Scene {
       this.jump = null
       this.score = 0
       this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
-      this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
+      this.gameOverScore = { font: '65px Arial', fill: '#ffffff', align: 'center' }
     }
   
     /**
@@ -60,11 +64,10 @@ class GameScene extends Phaser.Scene {
       console.log('Game Scene')
 
       this.load.image('background', './assets/background.png')
-
-      this,load.audio('die', './assets/audio/die.wav')
-      this,load.audio('hit', './assets/audio/hit.wav')
-      this,load.audio('point', './assets/audio/point.wav')
-      this,load.audio('wing', './assets/audio/wing.wav')
+      this.load.audio('die', './assets/audio/die.wav')
+      this.load.audio('hit', './assets/audio/hit.wav')
+      this.load.audio('point', './assets/audio/point.wav')
+      this.load.audio('wing', './assets/audio/wing.wav')
     }
   
     /**
@@ -87,9 +90,16 @@ class GameScene extends Phaser.Scene {
         
       }.bind(this))
 
+      const tubeSpacing = 150
+      const tubeWidth = 52
 
 
-
+      this.time.addEvent({
+        delay: 2000, // Adjust the interval between tube generation
+        loop: true,
+        callback: createPipe,
+        callbackScope: this
+      })
     }
     
   
@@ -101,7 +111,14 @@ class GameScene extends Phaser.Scene {
      */
     update (time, delta) {
         this.birdJump()
+
+        // Generate more pipes
+        pipeGroup.getChildren().forEach(function(createPipe) {
+          if (pipeGroup.getBounds().right < 0) {
+            // Remove tubes when they are off the screen
+            pipeGroup.destroy()
+          }
+        })
   }
 }
 export default GameScene
-  
