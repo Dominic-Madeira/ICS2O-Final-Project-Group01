@@ -8,22 +8,35 @@
 
 class GameScene extends Phaser.Scene {
 
-    createAlien () {
-      const alienXLocation = Math.floor(Math.random() * 1920) + 1 // this will get a number between 1 and 1920
-      let alienXVelocity = Math.floor(Math.random() * 50) + 1 // this will get a number between 1 and 50
-      alienXVelocity *= Math.round(Math.random()) ? 1 : -1 // this will add minus sign in 50% of cases
-      const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
-      anAlien.body.velocity.y = 200
-      anAlien.body.velocity.x = alienXVelocity
-      this.alienGroup.add(anAlien)
+  createPipe () {
+    const holeLocation = Math.floor(Math.random() * 780) + 201 // this will get a number between 200 and 980
+    const topPipe = this.physics.add.sprite(2000, holeLocation -100, 'topPipe')
+    const bottomPipe = this.physics.add.sprite(2000, holeLocation +100, 'bottomPipe')
+    this.pipeGroup.add(topPipe)
+    this.pipeGroup.add(bottomPipe)
+  }
+
+  birdJump () {
+    const keySpaceObj = this.input.keyboard.addKey('SPACE')
+    if (keySpaceObj.isDown === true) {
+      if (this.jump === false) {
+        this.jump = true
+        this.sound.play('wing')
+      }
     }
+
+    if (keySpaceObj.isUp === true) {
+      wait(500)
+      this.jump = false
+    }
+  }
   
     constructor () {
       super({ key:'gameScene'})
   
-      this.background = null
-      this.ship = null
-      this.fireMissile = null
+      this.background = null 
+      this.bird = null
+      this.jump = null
       this.score = 0
       this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
       this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
@@ -45,6 +58,13 @@ class GameScene extends Phaser.Scene {
      */
     preload () {
       console.log('Game Scene')
+
+      this.load.image('background', './assets/background.png')
+
+      this,load.audio('die', './assets/audio/die.wav')
+      this,load.audio('hit', './assets/audio/hit.wav')
+      this,load.audio('point', './assets/audio/point.wav')
+      this,load.audio('wing', './assets/audio/wing.wav')
     }
   
     /**
@@ -53,6 +73,23 @@ class GameScene extends Phaser.Scene {
      * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
      */
     create (data) {
+      this.background = this.add.image(0, 0, 'background')
+      this.background.setOrigin(0, 0)
+
+      this.scoreText = this.add.text(16, 16, 'Score: 0', this.scoreTextStyle)
+
+      this.bird = this.physics.add.sprite(100, 1080 / 2, 'bird')
+
+      this.pipeGroup = this.physics.add.group()
+      this.createPipe()
+
+      this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
+        
+      }.bind(this))
+
+
+
+
     }
     
   
@@ -63,9 +100,8 @@ class GameScene extends Phaser.Scene {
      * @param {number} delta - The delta time in ms since the last frame.
      */
     update (time, delta) {
-        const keySpaceObj = this.input.keyboard.addKey('SPACE')
-    }
+        this.birdJump()
   }
-  
-  export default GameScene
+}
+export default GameScene
   
