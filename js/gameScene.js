@@ -9,15 +9,26 @@
 class GameScene extends Phaser.Scene {
 
   createPipe () {
-    let pipeColor = ""
-    // 50/50 chance for pipe color to be green or orange
-    
-    const holePosition = Phaser.Math.Between(100, screenHeight - 100)
-    const topPipe = this.physics.add.sprite(game.config.width, holePosition - tubeSpacing, 'topPipe')
-    const bottomPipe = this.physics.add.sprite(game.config.width, holePosition + tubeSpacing, 'bottomPipe')
+    // Generate the pipes
+    const holePosition = Phaser.Math.Between(100, 1080 - 100)
+    const topPipe = this.physics.add.sprite(1080, holePosition - 160, 'pipe')
+    const bottomPipe = this.physics.add.sprite(1080, holePosition + 160 * 2, 'pipe')
     this.pipeGroup.add(topPipe)
     this.pipeGroup.add(bottomPipe)
-    this.pipeGroup.body.velocity.x = -200
+    topPipe.setScale(4.5)
+    bottomPipe.setScale(4.5)
+    topPipe.body.velocity.x = -200
+    bottomPipe.body.velocity.x = -200
+
+    // randomly pick orange or green
+    if (Phaser.Math.Between(0, 1) === 0) {
+      this.topPipe.frame(0)
+      this.bottomPipe.frame(0)
+    } else {
+      this.topPipe.frame(1)
+      this.bottomPipe.frame(1)
+    }
+    console.log('Pipe created')
   }
 
   birdJump () {
@@ -62,12 +73,17 @@ class GameScene extends Phaser.Scene {
      */
     preload () {
       console.log('Game Scene')
-
+      // Audio
       this.load.image('background', './assets/background.png')
       this.load.audio('die', './assets/audio/die.wav')
       this.load.audio('hit', './assets/audio/hit.wav')
       this.load.audio('point', './assets/audio/point.wav')
       this.load.audio('wing', './assets/audio/wing.wav')
+      // Pipes
+      this.load.spritesheet('pipe', './assets/tileset/pipe.png', {
+        frameWidth: 32,
+        frameHeight: 160
+      })
     }
   
     /**
@@ -86,13 +102,9 @@ class GameScene extends Phaser.Scene {
       this.pipeGroup = this.physics.add.group()
       this.createPipe()
 
-      this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
+      // this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
         
-      }.bind(this))
-
-      const tubeSpacing = 150
-      const tubeWidth = 52
-
+      // }.bind(this))
 
       this.time.addEvent({
         delay: 2000, // Adjust the interval between tube generation
@@ -100,6 +112,8 @@ class GameScene extends Phaser.Scene {
         callback: createPipe,
         callbackScope: this
       })
+
+      this.createPipe()
     }
     
   
