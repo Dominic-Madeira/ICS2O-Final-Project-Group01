@@ -10,9 +10,9 @@ class GameScene extends Phaser.Scene {
 
     createPipe () {
     // Generate the pipes
-    const holePosition = Phaser.Math.Between(100, 1080 - 100)
-    const topPipe = this.physics.add.sprite(1080, holePosition - 350, 'pipe')
-    const bottomPipe = this.physics.add.sprite(1080, holePosition + 350 * 2, 'pipe')
+    let holePosition = Phaser.Math.Between(150, 1080 - 425)
+    const topPipe = this.physics.add.sprite(1920, holePosition - 330, 'pipe')
+    const bottomPipe = this.physics.add.sprite(1920, holePosition + 330 * 2, 'pipe')
     this.topPipeGroup.add(topPipe)
     this.bottomPipeGroup.add(bottomPipe)
     // Change size
@@ -33,23 +33,29 @@ class GameScene extends Phaser.Scene {
     console.log('Pipe created')
   }
 
+  createFloor () {
+    // Generate the floor
+    const floor = this.physics.add.sprite(1920 / 2, 1080, 'floor')
+    this.floorGroup.add(floor)
+    floor.body.immovable = true
+    floor.body.velocity.x = -200
+    floor.setScale(5.0)
+    console.log('Floor created')
+  }
+
   birdJump () {
     const keySpaceObj = this.input.keyboard.addKey('SPACE')
     if (keySpaceObj.isDown === true) {
       if (this.jump === false) {
+        // fire missile
         this.jump = true
+        this.bird.setVelocityY(-500)
         this.sound.play('wing')
-        this.bird.body.velocity.y = -600
-        // wait (500)
-        // this.bird.body.velocity.y = 400
       }
     }
 
     if (keySpaceObj.isUp === true) {
-      console.log('test')
       this.jump = false
-      this.bird.body.velocity.y = 600
-
     }
   }
   
@@ -82,7 +88,6 @@ class GameScene extends Phaser.Scene {
       console.log('Game Scene')
       // Audio
       this.load.image('gameSceneBackground', './assets/background.png')
-      this.load.image('bird', './assets/player/bird1.png')
       this.load.audio('die', './assets/audio/die.wav')
       this.load.audio('hit', './assets/audio/hit.wav')
       this.load.audio('point', './assets/audio/point.wav')
@@ -92,6 +97,11 @@ class GameScene extends Phaser.Scene {
         frameWidth: 32,
         frameHeight: 160
       })
+      this.load.spritesheet('bird', './assets/player/bird1.png', {
+        frameWidth: 16,
+        frameHeight: 15
+      })
+      this.load.image('floor', './assets/tileset/floor.png')
     }
   
     /**
@@ -100,14 +110,18 @@ class GameScene extends Phaser.Scene {
      * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
      */
     create (data) {
-      this.gameSceneBackgroundImage = this.add.sprite(0, 0, 'gameSceneBackground')
-      this.gameSceneBackgroundImage.x = 1920 - 170
-      this.gameSceneBackgroundImage.y = 1080 / 2 - 100
-      this.gameSceneBackgroundImage.setScale(5.0)
+      // First side of background
+      this.menuSceneBackgroundImage = this.add.sprite(1920 - 170, 1080 / 2 - 100, 'menuSceneBackground')
+      this.menuSceneBackgroundImage.setScale(5.0)
+      // Second side of background
+      this.menuSceneBackgroundImage2 = this.add.sprite((1920 / 2) / 2, 1080 / 2 - 100, 'menuSceneBackground')
+      this.menuSceneBackgroundImage2.setScale(5.0)
 
       this.scoreText = this.add.text(16, 16, 'Score: 0', this.scoreTextStyle)
 
-      this.bird = this.physics.add.sprite(100, 1080 / 2, 'bird').setScale(5.0)
+      this.bird = this.physics.add.sprite(1920 / 2 - 200, 1080 / 2, 'bird').setScale(5.0)
+      this.bird.setGravityY(1000)
+      this.bird.setFrame(0)
 
       this.topPipeGroup = this.physics.add.group()
       this.bottomPipeGroup = this.physics.add.group()
@@ -147,8 +161,16 @@ class GameScene extends Phaser.Scene {
           if (bottomPipe.x < 0) {
             bottomPipe.destroy()
           }
+          if (bottomPipe.x < this.bird.x && bottomPipe.x > this.bird.x - 4) {
+            let stop = false
+            if (stop === false) {
+            stop = true
+            this.score += 1
+            this.scoreText.setText('Score: ' + this.score)
+            this.sound.play('point')
+            this.createPipe()
+          }}
         })
-
   }
 }
 export default GameScene
