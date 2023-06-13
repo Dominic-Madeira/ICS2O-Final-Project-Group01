@@ -156,12 +156,6 @@ class GameScene extends Phaser.Scene {
       this.floor2.setDepth(3)
       this.floor3.setDepth(3)
       this.createFloor()
-
-
-
-      // this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
-        
-      // }.bind(this))
     }
     
   
@@ -180,6 +174,20 @@ class GameScene extends Phaser.Scene {
         } else if (this.bird.y < 0) {
           this.bird.y = 1
         }
+
+        
+        // Get the bird's velocity
+        let velocityY = this.bird.body.velocity.y
+        let velocityX = this.bird.body.velocity.x
+
+        // Calculate the rotation angle based on the velocity
+        let rotationAngle = Math.atan2(velocityY, velocityX) * 90 / Math.PI
+        let rotationSpeed = 0.0001
+
+        // Set the rotation of the bird
+        this.bird.angle = rotationAngle
+
+        this.bird.rotation += (rotationAngle - this.bird.rotation) * rotationSpeed
 
         // Generate more floors
         this.floorGroup.getChildren().forEach((floor) => {
