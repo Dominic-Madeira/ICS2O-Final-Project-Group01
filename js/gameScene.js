@@ -8,25 +8,27 @@
 
 class GameScene extends Phaser.Scene {
 
-  createPipe () {
+    createPipe () {
     // Generate the pipes
     const holePosition = Phaser.Math.Between(100, 1080 - 100)
-    const topPipe = this.physics.add.sprite(1080, holePosition - 160, 'pipe')
-    const bottomPipe = this.physics.add.sprite(1080, holePosition + 160 * 2, 'pipe')
-    this.pipeGroup.add(topPipe)
-    this.pipeGroup.add(bottomPipe)
+    const topPipe = this.physics.add.sprite(1080, holePosition - 300, 'topPipe')
+    const bottomPipe = this.physics.add.sprite(1080, holePosition + 160 * 2, 'bottomPipe')
+    this.topPipeGroup.add(topPipe)
+    this.bottomPipeGroup.add(bottomPipe)
+    // Change size
     topPipe.setScale(4.5)
     bottomPipe.setScale(4.5)
+    // Make them move
     topPipe.body.velocity.x = -200
     bottomPipe.body.velocity.x = -200
 
     // randomly pick orange or green
     if (Phaser.Math.Between(0, 1) === 0) {
-      this.topPipe.frame(0)
-      this.bottomPipe.frame(0)
+      topPipe.setFrame(0)
+      bottomPipe.setFrame(0)
     } else {
-      this.topPipe.frame(1)
-      this.bottomPipe.frame(1)
+      topPipe.setFrame(1)
+      bottomPipe.setFrame(1)
     }
     console.log('Pipe created')
   }
@@ -113,15 +115,6 @@ class GameScene extends Phaser.Scene {
       // this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
         
       // }.bind(this))
-
-      this.time.addEvent({
-        delay: 2000, // Adjust the interval between tube generation
-        loop: true,
-        callback: createPipe,
-        callbackScope: this
-      })
-
-      this.createPipe()
     }
     
   
@@ -136,18 +129,19 @@ class GameScene extends Phaser.Scene {
 
         if (this.bird.y > 1080) {
           this.sound.play('hit')
-          this.scene.restart()
+          // this.scene.restart()
         } else if (this.bird.y < 0) {
           this.bird.y = 1
         }
 
         // Generate more pipes
-        this.pipeGroup.getChildren().forEach(function(pipe) {
-          if (pipe.getBounds().right < 0) {
+        this.pipeGroup.getChildren().forEach((pipe) => {
+          if (pipe.x < 0) {
             pipe.destroy()
+            this.createPipe()
           }
-        }
-        )
+        })
+
   }
 }
 export default GameScene
