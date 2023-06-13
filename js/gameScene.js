@@ -4,7 +4,7 @@
 //
 // Created by: Dominic M.
 // Created on: Apr 2023
-// This is the Menu Scene
+// This is the game Scene
 
 class GameScene extends Phaser.Scene {
 
@@ -37,12 +37,17 @@ class GameScene extends Phaser.Scene {
       if (this.jump === false) {
         this.jump = true
         this.sound.play('wing')
+        this.bird.body.velocity.y = -600
+        // wait (500)
+        // this.bird.body.velocity.y = 400
       }
     }
 
     if (keySpaceObj.isUp === true) {
-      wait(500)
+      console.log('test')
       this.jump = false
+      this.bird.body.velocity.y = 600
+
     }
   }
   
@@ -74,7 +79,8 @@ class GameScene extends Phaser.Scene {
     preload () {
       console.log('Game Scene')
       // Audio
-      this.load.image('background', './assets/background.png')
+      this.load.image('gameSceneBackground', './assets/background.png')
+      this.load.image('bird', './assets/player/bird1.png')
       this.load.audio('die', './assets/audio/die.wav')
       this.load.audio('hit', './assets/audio/hit.wav')
       this.load.audio('point', './assets/audio/point.wav')
@@ -92,12 +98,14 @@ class GameScene extends Phaser.Scene {
      * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
      */
     create (data) {
-      this.background = this.add.image(0, 0, 'background')
-      this.background.setOrigin(0, 0)
+      this.gameSceneBackgroundImage = this.add.sprite(0, 0, 'gameSceneBackground')
+      this.gameSceneBackgroundImage.x = 1920 - 170
+      this.gameSceneBackgroundImage.y = 1080 / 2 - 100
+      this.gameSceneBackgroundImage.setScale(5.0)
 
       this.scoreText = this.add.text(16, 16, 'Score: 0', this.scoreTextStyle)
 
-      this.bird = this.physics.add.sprite(100, 1080 / 2, 'bird')
+      this.bird = this.physics.add.sprite(100, 1080 / 2, 'bird').setScale(5.0)
 
       this.pipeGroup = this.physics.add.group()
       this.createPipe()
@@ -126,13 +134,20 @@ class GameScene extends Phaser.Scene {
     update (time, delta) {
         this.birdJump()
 
+        if (this.bird.y > 1080) {
+          this.sound.play('hit')
+          this.scene.restart()
+        } else if (this.bird.y < 0) {
+          this.bird.y = 1
+        }
+
         // Generate more pipes
-        pipeGroup.getChildren().forEach(function(createPipe) {
-          if (pipeGroup.getBounds().right < 0) {
-            // Remove tubes when they are off the screen
-            pipeGroup.destroy()
+        this.pipeGroup.getChildren().forEach(function(pipe) {
+          if (pipe.getBounds().right < 0) {
+            pipe.destroy()
           }
-        })
+        }
+        )
   }
 }
 export default GameScene
