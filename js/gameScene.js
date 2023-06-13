@@ -8,19 +8,33 @@
 
 class GameScene extends Phaser.Scene {
 
+    createFloor () {
+      // Generate the floor
+      const floor = this.physics.add.sprite(1920 + 300, 1080, 'floor')
+      this.floorGroup.add(floor)
+      floor.body.immovable = true
+      floor.body.velocity.x = -200
+      floor.setScale(5.0)
+      floor.setDepth(3)
+      console.log('Floor created')
+    }
+
     createPipe () {
     // Generate the pipes
     let holePosition = Phaser.Math.Between(150, 1080 - 425)
-    const topPipe = this.physics.add.sprite(1920, holePosition - 330, 'pipe')
-    const bottomPipe = this.physics.add.sprite(1920, holePosition + 330 * 2, 'pipe')
+    const topPipe = this.physics.add.sprite(1920 + 150, holePosition - 330, 'pipe')
+    const bottomPipe = this.physics.add.sprite(1920 + 150, holePosition + 330 * 2, 'pipe')
     this.topPipeGroup.add(topPipe)
     this.bottomPipeGroup.add(bottomPipe)
+    topPipe.setDepth(2)
+    bottomPipe.setDepth(2)
     // Change size
     topPipe.setScale(4.5)
     bottomPipe.setScale(4.5)
     // Make them move
     topPipe.body.velocity.x = -200
     bottomPipe.body.velocity.x = -200
+    
 
     // randomly pick orange or green
     if (Phaser.Math.Between(0, 1) === 0) {
@@ -31,16 +45,6 @@ class GameScene extends Phaser.Scene {
       bottomPipe.setFrame(1)
     }
     console.log('Pipe created')
-  }
-
-  createFloor () {
-    // Generate the floor
-    const floor = this.physics.add.sprite(1920 / 2, 1080, 'floor')
-    this.floorGroup.add(floor)
-    floor.body.immovable = true
-    floor.body.velocity.x = -200
-    floor.setScale(5.0)
-    console.log('Floor created')
   }
 
   birdJump () {
@@ -113,23 +117,45 @@ class GameScene extends Phaser.Scene {
       // First side of background
       this.menuSceneBackgroundImage = this.add.sprite(1920 - 170, 1080 / 2 - 100, 'menuSceneBackground')
       this.menuSceneBackgroundImage.setScale(5.0)
+      this.menuSceneBackgroundImage.setDepth(1)
       // Second side of background
       this.menuSceneBackgroundImage2 = this.add.sprite((1920 / 2) / 2, 1080 / 2 - 100, 'menuSceneBackground')
       this.menuSceneBackgroundImage2.setScale(5.0)
+      this.menuSceneBackgroundImage2.setDepth(1)
 
+      // Score
       this.scoreText = this.add.text(16, 16, 'Score: 0', this.scoreTextStyle)
 
+      // Bird group and creation
       this.bird = this.physics.add.sprite(1920 / 2 - 200, 1080 / 2, 'bird').setScale(5.0)
       this.bird.setGravityY(1000)
       this.bird.setFrame(0)
+      this.bird.setDepth(4)
 
+      // Pipe groups and creation
       this.topPipeGroup = this.physics.add.group()
       this.bottomPipeGroup = this.physics.add.group()
       this.createPipe()
 
-      // this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
-        
-      // }.bind(this))
+      // Floor group and creation
+      this.floorGroup = this.physics.add.group()
+      // Generate first set of floors
+      this.floor = this.add.sprite(1920 / 2, 1080, 'floor')
+      this.floor2 = this.add.sprite(1920 / 6, 1080, 'floor')
+      this.floor3 = this.add.sprite(1920 - (1920 / 6), 1080, 'floor')
+      this.floor.setScale(5)
+      this.floor2.setScale(5)
+      this.floor3.setScale(5)
+      this.floorGroup.add(this.floor)
+      this.floorGroup.add(this.floor2)
+      this.floorGroup.add(this.floor3)
+      this.floor.body.velocity.x = -200
+      this.floor2.body.velocity.x = -200
+      this.floor3.body.velocity.x = -200
+      this.floor.setDepth(3)
+      this.floor2.setDepth(3)
+      this.floor3.setDepth(3)
+      this.createFloor()
     }
     
   
@@ -149,16 +175,36 @@ class GameScene extends Phaser.Scene {
           this.bird.y = 1
         }
 
-        // Generate more pipes
-        this.topPipeGroup.getChildren().forEach((topPipe) => {
-          if (topPipe.x < 0) {
-            topPipe.destroy()
-            this.createPipe()
+        
+        // Get the bird's velocity
+        let velocityY = this.bird.body.velocity.y
+        let velocityX = this.bird.body.velocity.x
+
+        // Calculate the rotation angle based on the velocity
+        let rotationAngle = Math.atan2(velocityY, velocityX) * 90 / Math.PI
+        let rotationSpeed = 0.0001
+
+        // Set the rotation of the bird
+        this.bird.angle = rotationAngle
+
+        this.bird.rotation += (rotationAngle - this.bird.rotation) * rotationSpeed
+
+        // Generate more floors
+        this.floorGroup.getChildren().forEach((floor) => {
+          if (floor.x < -300) {
+            floor.destroy()
+            this.createFloor()
           }
         })
 
+        // Generate more pipes
+        this.topPipeGroup.getChildren().forEach((topPipe) => {
+          if (topPipe.x < -70) {
+            topPipe.destroy()
+          }
+        })
         this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
-          if (bottomPipe.x < 0) {
+          if (bottomPipe.x < -70) {
             bottomPipe.destroy()
           }
           if (bottomPipe.x < this.bird.x && bottomPipe.x > this.bird.x - 4) {
@@ -168,8 +214,11 @@ class GameScene extends Phaser.Scene {
             this.score += 1
             this.scoreText.setText('Score: ' + this.score)
             this.sound.play('point')
+          }
+        }
+          if (bottomPipe.x < this.bird.x + 675 && bottomPipe.x > this.bird.x + 675 - 4) {
             this.createPipe()
-          }}
+          }
         })
   }
 }
