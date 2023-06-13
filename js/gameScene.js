@@ -65,7 +65,9 @@ class GameScene extends Phaser.Scene {
   
     constructor () {
       super({ key:'gameScene'})
-  
+
+      this.deathCounter = 0
+      this.gameOver = false
       this.background = null 
       this.bird = null
       this.jump = null
@@ -166,11 +168,19 @@ class GameScene extends Phaser.Scene {
      * @param {number} delta - The delta time in ms since the last frame.
      */
     update (time, delta) {
+      if (this.gameOver ===false) {
         this.birdJump()
 
-        if (this.bird.y > 1080) {
+        if (this.deathCounter == 1) {
           this.sound.play('hit')
-          // this.scene.restart()
+          this.deathCounter++
+        }
+          if (this.bird.y > 960) {
+          this.bird.y = 959
+          this.bird.setGravityY(0)
+          this.deathCounter++
+          this.gameOver = true
+          this.physics.pause()
         } else if (this.bird.y < 0) {
           this.bird.y = 1
         }
@@ -186,6 +196,7 @@ class GameScene extends Phaser.Scene {
 
         // Set the rotation of the bird
         this.bird.angle = rotationAngle
+        console.log(this.bird.angle)
 
         this.bird.rotation += (rotationAngle - this.bird.rotation) * rotationSpeed
 
@@ -220,6 +231,15 @@ class GameScene extends Phaser.Scene {
             this.createPipe()
           }
         })
+
+        if (this.gameOver === true) {
+          this.bird.angle = 45
+        }
+      }
+      if (this.deathCounter == 1) {
+        this.sound.play('hit')
+        this.deathCounter++
+      }
   }
 }
 export default GameScene
