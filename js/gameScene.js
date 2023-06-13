@@ -11,8 +11,8 @@ class GameScene extends Phaser.Scene {
     createPipe () {
     // Generate the pipes
     const holePosition = Phaser.Math.Between(100, 1080 - 100)
-    const topPipe = this.physics.add.sprite(1080, holePosition - 300, 'topPipe')
-    const bottomPipe = this.physics.add.sprite(1080, holePosition + 160 * 2, 'bottomPipe')
+    const topPipe = this.physics.add.sprite(1080, holePosition - 350, 'pipe')
+    const bottomPipe = this.physics.add.sprite(1080, holePosition + 350 * 2, 'pipe')
     this.topPipeGroup.add(topPipe)
     this.bottomPipeGroup.add(bottomPipe)
     // Change size
@@ -109,7 +109,8 @@ class GameScene extends Phaser.Scene {
 
       this.bird = this.physics.add.sprite(100, 1080 / 2, 'bird').setScale(5.0)
 
-      this.pipeGroup = this.physics.add.group()
+      this.topPipeGroup = this.physics.add.group()
+      this.bottomPipeGroup = this.physics.add.group()
       this.createPipe()
 
       // this.physics.add.collider(this.bird, this.pipeGroup, function(birdCollide, pipeCollide) {
@@ -135,10 +136,16 @@ class GameScene extends Phaser.Scene {
         }
 
         // Generate more pipes
-        this.pipeGroup.getChildren().forEach((pipe) => {
-          if (pipe.x < 0) {
-            pipe.destroy()
+        this.topPipeGroup.getChildren().forEach((topPipe) => {
+          if (topPipe.x < 0) {
+            topPipe.destroy()
             this.createPipe()
+          }
+        })
+
+        this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
+          if (bottomPipe.x < 0) {
+            bottomPipe.destroy()
           }
         })
 

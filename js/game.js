@@ -49,6 +49,6 @@ game.scene.add("menuScene", menuScene)
 game.scene.add("gameScene", gameScene)
 
 // start scene
-game.scene.start("splashScene")
+game.scene.start("menuScene")
 // This is for developping purposes to skip the splash screen
 // game.scene.start("gameScene")
