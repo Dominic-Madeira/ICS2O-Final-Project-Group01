@@ -186,19 +186,14 @@ class GameScene extends Phaser.Scene {
         }
 
         
+        let rotationAngle = Math.PI / 4 * (this.bird.body.velocity.y * 0.005 )
         // Get the bird's velocity
+        this.bird.rotation = rotationAngle
         let velocityY = this.bird.body.velocity.y
+        if (this.bird.rotation > 1) {
         let velocityX = this.bird.body.velocity.x
-
-        // Calculate the rotation angle based on the velocity
-        let rotationAngle = Math.atan2(velocityY, velocityX) * 90 / Math.PI
-        let rotationSpeed = 0.0001
-
-        // Set the rotation of the bird
-        this.bird.angle = rotationAngle
-        console.log(this.bird.angle)
-
-        this.bird.rotation += (rotationAngle - this.bird.rotation) * rotationSpeed
+          this.bird.rotation = 1
+        }
 
         // Generate more floors
         this.floorGroup.getChildren().forEach((floor) => {
