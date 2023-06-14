@@ -10,10 +10,10 @@ class GameScene extends Phaser.Scene {
 
     createFloor () {
       // Generate the floor
-      const floor = this.physics.add.sprite(1920 + 300, 1080, 'floor')
+      const floor = this.physics.add.sprite(1920 + 290, 1080, 'floor')
       this.floorGroup.add(floor)
       floor.body.immovable = true
-      floor.body.velocity.x = -200
+      floor.body.velocity.x = this.gameSpeed
       floor.setScale(5.0)
       floor.setDepth(3)
       console.log('Floor created')
@@ -32,8 +32,8 @@ class GameScene extends Phaser.Scene {
     topPipe.setScale(4.5)
     bottomPipe.setScale(4.5)
     // Make them move
-    topPipe.body.velocity.x = -200
-    bottomPipe.body.velocity.x = -200
+    topPipe.body.velocity.x = this.gameSpeed
+    bottomPipe.body.velocity.x = this.gameSpeed
     
 
     // randomly pick orange or green
@@ -74,6 +74,7 @@ class GameScene extends Phaser.Scene {
       this.score = 0
       this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
       this.gameOverScore = { font: '65px Arial', fill: '#ffffff', align: 'center' }
+      this.gameSpeed = -200
     }
   
     /**
@@ -151,9 +152,9 @@ class GameScene extends Phaser.Scene {
       this.floorGroup.add(this.floor)
       this.floorGroup.add(this.floor2)
       this.floorGroup.add(this.floor3)
-      this.floor.body.velocity.x = -200
-      this.floor2.body.velocity.x = -200
-      this.floor3.body.velocity.x = -200
+      this.floor.body.velocity.x = this.gameSpeed
+      this.floor2.body.velocity.x = this.gameSpeed
+      this.floor3.body.velocity.x = this.gameSpeed
       this.floor.setDepth(3)
       this.floor2.setDepth(3)
       this.floor3.setDepth(3)
@@ -185,10 +186,10 @@ class GameScene extends Phaser.Scene {
           this.bird.y = 1
         }
 
-        let rotationAngle = Math.PI / 4 * (this.bird.body.velocity.y * 0.005 )
+        let rotationAngle = Math.PI / 4 * (this.bird.body.velocity.y * 0.003 )
         this.bird.rotation = rotationAngle
-        if (this.bird.rotation > 1) {
-          this.bird.rotation = 1
+        if (this.bird.rotation > 0.8) {
+          this.bird.rotation = 0.8
         }
 
         // Generate more floors
