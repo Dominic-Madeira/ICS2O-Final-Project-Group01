@@ -72,6 +72,7 @@ class GameScene extends Phaser.Scene {
       this.bird = null
       this.jump = null
       this.score = 0
+      this.pipeCollision = false
       this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
       this.gameOverScore = { font: '65px Arial', fill: '#ffffff', align: 'center' }
       this.gameSpeed = -200
@@ -168,6 +169,7 @@ class GameScene extends Phaser.Scene {
       this.physics.add.collider(this.bird, this.bottomPipeGroup, function () {
         this.sound.play('hit')
         this.sound.play('die')
+        this.pipeCollision = true
         this.gameOver = true
         // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
         // this.gameOverText.setInteractive({ useHandCursor: true })
@@ -177,6 +179,7 @@ class GameScene extends Phaser.Scene {
       this.physics.add.collider(this.bird, this.topPipeGroup, function () {
         this.sound.play('hit')
         this.sound.play('die')
+        this.pipeCollision = true
         this.gameOver = true
         // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
         // this.gameOverText.setInteractive({ useHandCursor: true })
@@ -293,11 +296,13 @@ class GameScene extends Phaser.Scene {
         })
 
         // flips the bird upside down
+        if (this.pipeCollision === true) {
         if (this.bird.angle > -170) {
         this.bird.angle -= 10
         this.bird.setGravityY(1000)
         }
       }
+    }
 
       //plays a smack sound when the bird hits the ground
       if (this.deathCounter == 1) {
