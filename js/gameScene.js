@@ -25,7 +25,7 @@ class GameScene extends Phaser.Scene {
     const topPipe = this.physics.add.sprite(1920 + 150, holePosition - 330, 'pipe')
     const bottomPipe = this.physics.add.sprite(1920 + 150, holePosition + 330 * 2, 'pipe')
     this.topPipeGroup.add(topPipe)
-    this.bottomPipeGroup.add(bottomPipe)
+    this.bottomPipeGroupBeforePoint.add(bottomPipe)
     topPipe.setDepth(2)
     bottomPipe.setDepth(2)
     // Change size
@@ -143,7 +143,9 @@ class GameScene extends Phaser.Scene {
 
       // Pipe groups and creation
       this.topPipeGroup = this.physics.add.group()
+      this.bottomPipeGroupBeforePoint = this.physics.add.group()
       this.bottomPipeGroup = this.physics.add.group()
+      this.bottomPipeGroupAfterPoint = this.physics.add.group()
       this.createPipe()
 
       // Floor group and creation
@@ -253,7 +255,28 @@ class GameScene extends Phaser.Scene {
             topPipe.destroy()
           }
         })
+
+        this.bottomPipeGroupBeforePoint.getChildren().forEach((bottomPipe) => {
+          if (bottomPipe.x < this.bird.x + 675) {
+            this.createPipe()
+            this.bottomPipeGroupBeforePoint.remove(bottomPipe)
+            this.bottomPipeGroup.add(bottomPipe)
+          }
+        })
+
         this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
+          bottomPipe.body.velocity.x = this.gameSpeed
+        if (bottomPipe.x < this.bird.x) {
+          this.score += 1
+          this.scoreText.setText('Score: ' + this.score)
+          this.sound.play('point')
+          this.bottomPipeGroup.remove(bottomPipe)
+          this.bottomPipeGroupAfterPoint.add(bottomPipe)
+      }
+    })
+
+        this.bottomPipeGroupAfterPoint.getChildren().forEach((bottomPipe) => {
+          bottomPipe.body.velocity.x = this.gameSpeed
           if (bottomPipe.x < -70) {
             bottomPipe.destroy()
           }
