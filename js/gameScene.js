@@ -21,7 +21,7 @@ class GameScene extends Phaser.Scene {
 
     createPipe () {
     // Generate the pipes
-    let holePosition = Phaser.Math.Between(150, 1080 - 425)
+    let holePosition = Phaser.Math.Between(150, 1080 - 470)
     const topPipe = this.physics.add.sprite(1920 + 150, holePosition - 330, 'pipe')
     const bottomPipe = this.physics.add.sprite(1920 + 150, holePosition + 330 * 2, 'pipe')
     this.topPipeGroup.add(topPipe)
@@ -88,21 +88,20 @@ class GameScene extends Phaser.Scene {
     this.gameOver = true
 
     // Award medals
-    if (this.score < 10) {
-      //pass
-    } else if (this.score > 9) {
+    if (this.score >= 10 && this.score < 19) {
       this.bronzeMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'bronzeMedal')
       this.bronzeMedal.setScale(8)
       this.bronzeMedal.setDepth(6)
-    } else if (this.score > 19) {
+    } else if (this.score >= 20 && this.score < 29) {
       this.silverMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'silverMedal')
       this.silverMedal.setScale(8)
       this.silverMedal.setDepth(6)
-    } else if (this.score > 29) {
+    } else if (this.score > 30) {
       this.goldMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'goldMedal')
       this.goldMedal.setScale(8)
       this.goldMedal.setDepth(6)
     }
+    this.score = 0
     // Add ok button
     this.okButton = this.add.sprite(1920 / 2, 1080 / 2 + 300, 'okButton')
     this.okButton.setScale(6)
@@ -239,17 +238,7 @@ class GameScene extends Phaser.Scene {
       // Pause game
       this.physics.pause()
 
-      // Start game when any input is recieved
-      this.input.on('pointerdown', () => {
-        this.getReady.destroy()
-        this.physics.resume()
-    })
-    //   // Start game if space is pressed
-    //   this.input.keyboard.on('keydown', () => {
-    //     this.getReady.destroy()
-    //     this.physics.resume()
-    // })
-    this.scoreText.setDepth(6)
+      this.scoreText.setDepth(6)
   }
     
   
@@ -311,7 +300,7 @@ class GameScene extends Phaser.Scene {
         this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
           bottomPipe.body.velocity.x = this.gameSpeed
         if (bottomPipe.x < this.bird.x) {
-          this.score += 1
+          this.score += 5
           this.scoreText.setText('' + this.score)
           this.sound.play('point')
           this.bottomPipeGroup.remove(bottomPipe)
