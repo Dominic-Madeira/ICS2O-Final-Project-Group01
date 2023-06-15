@@ -58,6 +58,8 @@ class MenuScene extends Phaser.Scene {
       this.startButton = this.add.sprite(1920 / 2, (1080 / 2) + 300, 'startButton')
       this.startButton.setInteractive({ useHandCursor: true })
       this.startButton.on('pointerdown', () => this.clickButton())
+      this.startButton.on('pointerover', () => this.startButton.setTint(0x808080))
+      this.startButton.on('pointerout', () => this.startButton.clearTint())
       this.startButton.setScale(5)
 
       // Add pipes
