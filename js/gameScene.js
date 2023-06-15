@@ -34,7 +34,6 @@ class GameScene extends Phaser.Scene {
     // Make them move
     topPipe.body.velocity.x = this.gameSpeed
     bottomPipe.body.velocity.x = this.gameSpeed
-    
 
     // randomly pick orange or green
     if (Phaser.Math.Between(0, 1) === 0) {
@@ -51,10 +50,17 @@ class GameScene extends Phaser.Scene {
     const keySpaceObj = this.input.keyboard.addKey('SPACE')
     if (keySpaceObj.isDown === true) {
       if (this.jump === false) {
-        // fire missile
+        // Jump
+        if (this.gameOver === false) {
         this.jump = true
         this.bird.setVelocityY(-500)
         this.sound.play('wing')
+        this.bird.anims.play('flap', true)
+        if (this.getReady) {
+          this.getReady.destroy()
+          this.physics.resume()
+        }
+        }
       }
     }
 
@@ -62,7 +68,51 @@ class GameScene extends Phaser.Scene {
       this.jump = false
     }
   }
-  
+
+  okButtonPressed () {
+    this.scene.restart()
+    this.physics.resume()
+    this.gameOver = false
+  }
+
+  endGame () {
+    this.sound.play('swoosh')
+    this.gameOver = this.add.sprite(1920 / 2, 1080 / 2 - 300, 'gameOver')
+    this.gameOver.setDepth(5)
+    this.gameOver.setScale(7)
+    this.scoreBoard = this.add.sprite(1920 / 2, 1080 / 2, 'scoreBoard')
+    this.scoreBoard.setDepth(5)
+    this.scoreBoard.setScale(8)
+    this.scoreText.x = 1920 / 2 + 160
+    this.scoreText.y = 1080 / 2 - 59
+    this.gameOver = true
+
+    // Award medals
+    if (this.score < 10) {
+      //pass
+    } else if (this.score > 9) {
+      this.bronzeMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'bronzeMedal')
+      this.bronzeMedal.setScale(8)
+      this.bronzeMedal.setDepth(6)
+    } else if (this.score > 19) {
+      this.silverMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'silverMedal')
+      this.silverMedal.setScale(8)
+      this.silverMedal.setDepth(6)
+    } else if (this.score > 29) {
+      this.goldMedal = this.add.sprite(1920 / 2 - 184, 1080 / 2 + 20, 'goldMedal')
+      this.goldMedal.setScale(8)
+      this.goldMedal.setDepth(6)
+    }
+    // Add ok button
+    this.okButton = this.add.sprite(1920 / 2, 1080 / 2 + 300, 'okButton')
+    this.okButton.setScale(6)
+    this.okButton.setDepth(8)
+    this.okButton.setInteractive({ useHandCursor: true })
+    this.okButton.on('pointerdown', () => this.okButtonPressed())
+    this.okButton.on('pointerover', () => this.okButton.setTint(0x808080))
+    this.okButton.on('pointerout', () => this.okButton.clearTint())
+  }
+
     constructor () {
       super({ key:'gameScene'})
 
@@ -94,19 +144,12 @@ class GameScene extends Phaser.Scene {
       console.log('Game Scene')
       // Audio
       this.load.image('gameSceneBackground', './assets/background.png')
-      this.load.audio('die', './assets/audio/die.wav')
+      this.load.audio('swoosh', './assets/audio/swoosh.wav')
       this.load.audio('hit', './assets/audio/hit.wav')
       this.load.audio('point', './assets/audio/point.wav')
       this.load.audio('wing', './assets/audio/wing.wav')
-      // Pipes
-      this.load.spritesheet('pipe', './assets/tileset/pipe.png', {
-        frameWidth: 32,
-        frameHeight: 160
-      })
-      this.load.spritesheet('bird', './assets/player/bird1.png', {
-        frameWidth: 16,
-        frameHeight: 15
-      })
+
+      // Images
       this.load.image('floor', './assets/tileset/floor.png')
       this.load.image('getReady', './assets/userInterface/getReady.png')
       this.load.image('gameOver', './assets/userInterface/gameOver.png')
@@ -115,6 +158,19 @@ class GameScene extends Phaser.Scene {
       this.load.image('bronzeMedal', './assets/userInterface/bronzeMedal.png')
       this.load.image('silverMedal', './assets/userInterface/silverMedal.png')
       this.load.image('goldMedal', './assets/userInterface/goldMedal.png')
+      // Button
+      this.load.image('okButton', './assets/userInterface/okButton.png')
+
+      // Sprite sheets
+      this.load.spritesheet('pipe', './assets/tileset/pipe.png', {
+        frameWidth: 32,
+        frameHeight: 160
+      })
+      this.load.spritesheet('bird', './assets/player/bird1.png', {
+        frameWidth: 16,
+        frameHeight: 15
+      })
+
     }
   
     /**
@@ -140,6 +196,13 @@ class GameScene extends Phaser.Scene {
       this.bird.setGravityY(1000)
       this.bird.setFrame(0)
       this.bird.setDepth(4)
+      // Bird animation
+      this.anims.create({
+        key: 'flap',
+        frames: this.anims.generateFrameNumbers('bird', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: 1
+    })
 
       // Pipe groups and creation
       this.topPipeGroup = this.physics.add.group()
@@ -169,6 +232,7 @@ class GameScene extends Phaser.Scene {
       this.createFloor()
 
       // Get ready stuff
+      this.gameOver = false
       this.getReady = this.add.sprite(1920 / 2, 1080 / 2, 'getReady')
       this.getReady.setDepth(5)
       this.getReady.setScale(6.0)
@@ -180,11 +244,11 @@ class GameScene extends Phaser.Scene {
         this.getReady.destroy()
         this.physics.resume()
     })
-      // Start game if space is pressed
-      this.input.keyboard.on('keydown', () => {
-        this.getReady.destroy()
-        this.physics.resume()
-    })
+    //   // Start game if space is pressed
+    //   this.input.keyboard.on('keydown', () => {
+    //     this.getReady.destroy()
+    //     this.physics.resume()
+    // })
     this.scoreText.setDepth(6)
   }
     
@@ -210,27 +274,7 @@ class GameScene extends Phaser.Scene {
           this.gameOver = true
           this.physics.pause()
           // End the game
-          this.sound.play('die')
-          this.gameOver = this.add.sprite(1920 / 2, 1080 / 2 - 300, 'gameOver')
-          this.gameOver.setDepth(5)
-          this.gameOver.setScale(7)
-          this.scoreBoard = this.add.sprite(1920 / 2, 1080 / 2, 'scoreBoard')
-          this.scoreBoard.setDepth(5)
-          this.scoreBoard.setScale(8)
-          this.scoreText.x = 1920 / 2 + 162
-          this.scoreText.y = 1080 / 2 - 57
-          if (this.score < 10) {
-            this.bronzeMedal = this.add.sprite(1920 / 2 - 183, 1080 / 2 + 25, 'bronzeMedal')
-            this.bronzeMedal.setScale(8)
-            this.bronzeMedal.setDepth(6)
-            console.log("bronze")
-          } else if (this.score > 10) {
-            this.bronzeMedal = this.add.sprite(1920 / 2 - 200, 1080 / 2 + 200, 'bronzeMedal')
-          } else if (this.score > 19) {
-            //pass
-          } else if (this.score > 29) {
-            //pass
-          }
+          this.endGame()
         } else if (this.bird.y < 0) {
           this.bird.y = 1
         }
@@ -268,7 +312,7 @@ class GameScene extends Phaser.Scene {
           bottomPipe.body.velocity.x = this.gameSpeed
         if (bottomPipe.x < this.bird.x) {
           this.score += 1
-          this.scoreText.setText('Score: ' + this.score)
+          this.scoreText.setText('' + this.score)
           this.sound.play('point')
           this.bottomPipeGroup.remove(bottomPipe)
           this.bottomPipeGroupAfterPoint.add(bottomPipe)
@@ -280,15 +324,7 @@ class GameScene extends Phaser.Scene {
           if (bottomPipe.x < -70) {
             bottomPipe.destroy()
           }
-          if (bottomPipe.x < this.bird.x && bottomPipe.x > this.bird.x - 4) {
-            let stop = false
-            if (stop === false) {
-            stop = true
-            this.score += 1
-            this.scoreText.setText('' + this.score)
-            this.sound.play('point')
-          }
-        }
+
           if (bottomPipe.x < this.bird.x + 675 && bottomPipe.x > this.bird.x + 675 - 4) {
             this.createPipe()
           }
@@ -299,7 +335,7 @@ class GameScene extends Phaser.Scene {
         }
       }
       if (this.deathCounter == 1) {
-        this.sound.play('hit')
+        this.sound.play('swoosh')
         this.deathCounter++
       }
   }
