@@ -72,8 +72,7 @@ class GameScene extends Phaser.Scene {
       this.bird = null
       this.jump = null
       this.score = 0
-      this.scoreTextStyle = { font: '65px Arial', fill: '#ffffff', align: 'center' }
-      this.gameOverScore = { font: '65px Arial', fill: '#ffffff', align: 'center' }
+      this.scoreTextStyle = { font: '65px Arial', fill: '#000000', align: 'center' }
       this.gameSpeed = -200
     }
   
@@ -109,6 +108,13 @@ class GameScene extends Phaser.Scene {
         frameHeight: 15
       })
       this.load.image('floor', './assets/tileset/floor.png')
+      this.load.image('getReady', './assets/userInterface/getReady.png')
+      this.load.image('gameOver', './assets/userInterface/gameOver.png')
+      this.load.image('scoreBoard', './assets/userInterface/scoreBoard.png')
+      // Medals
+      this.load.image('bronzeMedal', './assets/userInterface/bronzeMedal.png')
+      this.load.image('silverMedal', './assets/userInterface/silverMedal.png')
+      this.load.image('goldMedal', './assets/userInterface/goldMedal.png')
     }
   
     /**
@@ -127,7 +133,7 @@ class GameScene extends Phaser.Scene {
       this.menuSceneBackgroundImage2.setDepth(1)
 
       // Score
-      this.scoreText = this.add.text(16, 16, 'Score: 0', this.scoreTextStyle)
+      this.scoreText = this.add.text(1920 / 2, 32, '0', this.scoreTextStyle)
 
       // Bird group and creation
       this.bird = this.physics.add.sprite(1920 / 2 - 200, 1080 / 2, 'bird').setScale(5.0)
@@ -159,7 +165,26 @@ class GameScene extends Phaser.Scene {
       this.floor2.setDepth(3)
       this.floor3.setDepth(3)
       this.createFloor()
-    }
+
+      // Get ready stuff
+      this.getReady = this.add.sprite(1920 / 2, 1080 / 2, 'getReady')
+      this.getReady.setDepth(5)
+      this.getReady.setScale(6.0)
+      // Pause game
+      this.physics.pause()
+
+      // Start game when any input is recieved
+      this.input.on('pointerdown', () => {
+        this.getReady.destroy()
+        this.physics.resume()
+    })
+      // Start game if space is pressed
+      this.input.keyboard.on('keydown', () => {
+        this.getReady.destroy()
+        this.physics.resume()
+    })
+    this.scoreText.setDepth(6)
+  }
     
   
     /**
@@ -182,6 +207,28 @@ class GameScene extends Phaser.Scene {
           this.deathCounter++
           this.gameOver = true
           this.physics.pause()
+          // End the game
+          this.sound.play('die')
+          this.gameOver = this.add.sprite(1920 / 2, 1080 / 2 - 300, 'gameOver')
+          this.gameOver.setDepth(5)
+          this.gameOver.setScale(7)
+          this.scoreBoard = this.add.sprite(1920 / 2, 1080 / 2, 'scoreBoard')
+          this.scoreBoard.setDepth(5)
+          this.scoreBoard.setScale(8)
+          this.scoreText.x = 1920 / 2 + 162
+          this.scoreText.y = 1080 / 2 - 57
+          if (this.score < 10) {
+            this.bronzeMedal = this.add.sprite(1920 / 2 - 183, 1080 / 2 + 25, 'bronzeMedal')
+            this.bronzeMedal.setScale(8)
+            this.bronzeMedal.setDepth(6)
+            console.log("bronze")
+          } else if (this.score > 10) {
+            this.bronzeMedal = this.add.sprite(1920 / 2 - 200, 1080 / 2 + 200, 'bronzeMedal')
+          } else if (this.score > 19) {
+            //pass
+          } else if (this.score > 29) {
+            //pass
+          }
         } else if (this.bird.y < 0) {
           this.bird.y = 1
         }
@@ -215,7 +262,7 @@ class GameScene extends Phaser.Scene {
             if (stop === false) {
             stop = true
             this.score += 1
-            this.scoreText.setText('Score: ' + this.score)
+            this.scoreText.setText('' + this.score)
             this.sound.play('point')
           }
         }
