@@ -121,6 +121,7 @@ class GameScene extends Phaser.Scene {
       this.bird = null
       this.jump = null
       this.score = 0
+      this.pipeCollision = false
       this.scoreTextStyle = { font: '65px Arial', fill: '#000000', align: 'center' }
       this.gameSpeed = -200
     }
@@ -186,9 +187,11 @@ class GameScene extends Phaser.Scene {
       this.menuSceneBackgroundImage2 = this.add.sprite((1920 / 2) / 2, 1080 / 2 - 100, 'menuSceneBackground')
       this.menuSceneBackgroundImage2.setScale(5.0)
       this.menuSceneBackgroundImage2.setDepth(1)
+    
+    
 
       // Score
-      this.scoreText = this.add.text(1920 / 2, 32, '0', this.scoreTextStyle)
+      // this.scoreText = this.add.text(1920 / 2, 32, '0', this.scoreTextStyle)
 
       // Bird group and creation
       this.bird = this.physics.add.sprite(1920 / 2 - 200, 1080 / 2, 'bird').setScale(5.0)
@@ -208,6 +211,7 @@ class GameScene extends Phaser.Scene {
       this.bottomPipeGroupBeforePoint = this.physics.add.group()
       this.bottomPipeGroup = this.physics.add.group()
       this.bottomPipeGroupAfterPoint = this.physics.add.group()
+      this.topPipeGroupAfterDeath = this.physics.add.group()
       this.createPipe()
 
       // Floor group and creation
@@ -239,6 +243,26 @@ class GameScene extends Phaser.Scene {
       this.physics.pause()
 
       this.scoreText.setDepth(6)
+
+      this.physics.add.collider(this.bird, this.bottomPipeGroup, function () {
+        this.sound.play('hit')
+        this.sound.play('die')
+        this.pipeCollision = true
+        this.gameOver = true
+        // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+        // this.gameOverText.setInteractive({ useHandCursor: true })
+        // this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+      }.bind(this))
+
+      this.physics.add.collider(this.bird, this.topPipeGroup, function () {
+        this.sound.play('hit')
+        this.sound.play('die')
+        this.pipeCollision = true
+        this.gameOver = true
+        // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+        // this.gameOverText.setInteractive({ useHandCursor: true })
+        // this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+      }.bind(this))
   }
     
   
@@ -249,13 +273,19 @@ class GameScene extends Phaser.Scene {
      * @param {number} delta - The delta time in ms since the last frame.
      */
     update (time, delta) {
+      // keeps bird in one spot on the x axis
+      this.bird.x = 760
+
+      // code runs if game is not over
       if (this.gameOver ===false) {
         this.birdJump()
 
+        //makes smacking sound when bird hits the ground
         if (this.deathCounter == 1) {
           this.sound.play('hit')
           this.deathCounter++
         }
+        // keeps bird on screen
           if (this.bird.y > 960) {
           this.bird.y = 959
           this.bird.setGravityY(0)
@@ -268,6 +298,7 @@ class GameScene extends Phaser.Scene {
           this.bird.y = 1
         }
 
+        // rotates the bird with the velocity of the bird
         let rotationAngle = Math.PI / 4 * (this.bird.body.velocity.y * 0.003 )
         this.bird.rotation = rotationAngle
         if (this.bird.rotation > 0.8) {
@@ -300,7 +331,7 @@ class GameScene extends Phaser.Scene {
         this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
           bottomPipe.body.velocity.x = this.gameSpeed
         if (bottomPipe.x < this.bird.x) {
-          this.score += 5
+          this.score += 1
           this.scoreText.setText('' + this.score)
           this.sound.play('point')
           this.bottomPipeGroup.remove(bottomPipe)
@@ -318,11 +349,47 @@ class GameScene extends Phaser.Scene {
             this.createPipe()
           }
         })
+      }
 
-        if (this.gameOver === true) {
-          this.bird.angle = 45
+      //code runs if game is over
+      if (this.gameOver === true) {
+
+        //stops pipes and floor from moving
+        this.bottomPipeGroup.getChildren().forEach((bottomPipe) => {
+          bottomPipe.body.velocity.x = 0
+          this.bottomPipeGroup.remove(bottomPipe)
+          this.bottomPipeGroupAfterPoint.add(bottomPipe)
+      })
+
+      this.topPipeGroup.getChildren().forEach((topPipe) => {
+        topPipe.body.velocity.x = 0
+        this.topPipeGroup.remove(topPipe)
+        this.topPipeGroupAfterDeath.add(topPipe)
+      })
+
+        this.floorGroup.getChildren().forEach((floor) => {
+          floor.body.velocity.x = 0
+        })
+
+        this.bottomPipeGroupBeforePoint.getChildren().forEach((bottomPipe) => {
+          bottomPipe.body.velocity.x = 0
+        })
+
+        this.bottomPipeGroupAfterPoint.getChildren().forEach((bottomPipe) => {
+          bottomPipe.body.velocity.x = 0
+        })
+      }
+
+        // flips the bird upside down
+        if (this.pipeCollision === true) {
+        if (this.bird.angle > -170) {
+        this.bird.angle -= 10
+        this.bird.setGravityY(1000)
         }
       }
+    }
+
+      //plays a smack sound when the bird hits the ground
       if (this.deathCounter == 1) {
         this.sound.play('swoosh')
         this.deathCounter++
