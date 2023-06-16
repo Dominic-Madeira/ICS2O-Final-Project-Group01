@@ -44,7 +44,7 @@ class GameScene extends Phaser.Scene {
       bottomPipe.setFrame(1)
     }
     console.log('Pipe created')
-  }
+  }// update
 
   birdJump () {
     const keySpaceObj = this.input.keyboard.addKey('SPACE')
