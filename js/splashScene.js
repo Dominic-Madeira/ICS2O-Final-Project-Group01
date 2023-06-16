@@ -51,6 +51,7 @@ class SplashScene extends Phaser.Scene {
    * @param {number} delta - The delta time in ms since the last frame.
    */
   update (time, delta) {
+    // wait 3 seconds then move to the next scene
     if (time > 3000) {
       this.scene.switch('titleScene')
     }

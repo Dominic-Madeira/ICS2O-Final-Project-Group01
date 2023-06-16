@@ -1,8 +1,8 @@
 /* global Phaser */
 
-// Copyright (c) 2023 Dominic M. All rights reserved
+// Copyright (c) 2023 Dominic M. Mohamad T. All rights reserved
 //
-// Created by: Dominic M.
+// Created by: Dominic M. Mohamad T.
 // Created on: Apr 2023
 // This is the Menu Scene
 
@@ -47,10 +47,10 @@ class MenuScene extends Phaser.Scene {
      * @param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
      */
     create (data) {
-      // First side of background
+      // Right side of background
       this.menuSceneBackgroundImage = this.add.sprite(1920 - 170, 1080 / 2 - 100, 'menuSceneBackground')
       this.menuSceneBackgroundImage.setScale(5.0)
-      // Second side of background
+      // Left side of background
       this.menuSceneBackgroundImage2 = this.add.sprite((1920 / 2) / 2, 1080 / 2 - 100, 'menuSceneBackground')
       this.menuSceneBackgroundImage2.setScale(5.0)
   
@@ -107,6 +107,7 @@ class MenuScene extends Phaser.Scene {
       // pass
     }
     clickButton () {
+      // Starts the Game
       this.scene.switch('gameScene')
     }
   }

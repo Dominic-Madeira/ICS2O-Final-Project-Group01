@@ -1,8 +1,8 @@
 /* global Phaser */
 
-// Copyright (c) 2023 Dominic M. All rights reserved
+// Copyright (c) 2023 Dominic M. Mohamad T. All rights reserved
 //
-// Created by: Dominic M.
+// Created by: Dominic M. Mohamad T.
 // Created on: Apr 2023
 // This is the Title Scene
 
