@@ -378,7 +378,6 @@ class GameScene extends Phaser.Scene {
         this.bottomPipeGroupAfterPoint.getChildren().forEach((bottomPipe) => {
           bottomPipe.body.velocity.x = 0
         })
-      }
 
         // flips the bird upside down
         if (this.pipeCollision === true) {
