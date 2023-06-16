@@ -16,7 +16,6 @@ class GameScene extends Phaser.Scene {
       floor.body.velocity.x = this.gameSpeed
       floor.setScale(5.0)
       floor.setDepth(3)
-      console.log('Floor created')
     }
 
     createPipe () {
@@ -43,7 +42,6 @@ class GameScene extends Phaser.Scene {
       topPipe.setFrame(1)
       bottomPipe.setFrame(1)
     }
-    console.log('Pipe created')
   }// update
 
   birdJump () {
@@ -104,7 +102,7 @@ class GameScene extends Phaser.Scene {
     this.score = 0
     // Add ok button
     this.okButton = this.add.sprite(1920 / 2, 1080 / 2 + 300, 'okButton')
-    this.okButton.setScale(6)
+    this.okButton.setScale(5)
     this.okButton.setDepth(8)
     this.okButton.setInteractive({ useHandCursor: true })
     this.okButton.on('pointerdown', () => this.okButtonPressed())
@@ -191,7 +189,7 @@ class GameScene extends Phaser.Scene {
     
 
       // Score
-      // this.scoreText = this.add.text(1920 / 2, 32, '0', this.scoreTextStyle)
+      this.scoreText = this.add.text(1920 / 2, 32, '0', this.scoreTextStyle)
 
       // Bird group and creation
       this.bird = this.physics.add.sprite(1920 / 2 - 200, 1080 / 2, 'bird').setScale(5.0)
@@ -246,7 +244,7 @@ class GameScene extends Phaser.Scene {
 
       this.physics.add.collider(this.bird, this.bottomPipeGroup, function () {
         this.sound.play('hit')
-        this.sound.play('die')
+
         this.pipeCollision = true
         this.gameOver = true
         // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
@@ -256,7 +254,7 @@ class GameScene extends Phaser.Scene {
 
       this.physics.add.collider(this.bird, this.topPipeGroup, function () {
         this.sound.play('hit')
-        this.sound.play('die')
+        this.sound.play('swoosh')
         this.pipeCollision = true
         this.gameOver = true
         // this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
@@ -287,8 +285,8 @@ class GameScene extends Phaser.Scene {
         }
         // keeps bird on screen
           if (this.bird.y > 960) {
-          this.bird.y = 959
           this.bird.setGravityY(0)
+          this.bird.y = 959
           this.deathCounter++
           this.gameOver = true
           this.physics.pause()
@@ -384,6 +382,16 @@ class GameScene extends Phaser.Scene {
         if (this.bird.angle > -170) {
         this.bird.angle -= 10
         this.bird.setGravityY(1000)
+        }
+        if (this.bird.y > 960) {
+          this.bird.setGravityY(0)
+          this.bird.y = 975
+          this.deathCounter++
+          this.gameOver = true
+          this.pipeCollision = false
+          this.physics.pause()
+          // End the game
+          this.endGame()
         }
       }
     }
