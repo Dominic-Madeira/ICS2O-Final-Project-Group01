@@ -8,9 +8,9 @@
 
 class TitleScene extends Phaser.Scene {
   constructor() {
-    super({ key: "titleScene" });
+    super({ key: "titleScene" })
 
-    this.titleSceneBackgroundImage = null;
+    this.titleSceneBackgroundImage = null
   }
 
   /**
@@ -20,7 +20,7 @@ class TitleScene extends Phaser.Scene {
    *@param {object} data - Data passed via ScenePlugin.add() or ScenePlugin.start().
    */
   init(data) {
-    this.cameras.main.setBackgroundColor("#ffffff");
+    this.cameras.main.setBackgroundColor("#ffffff")
   }
 
   /**
@@ -28,8 +28,8 @@ class TitleScene extends Phaser.Scene {
    * Use it to load assets.
    */
   preload() {
-    console.log("Title Scene");
-    this.load.image("titleSceneBackground", "./assets/titleScene.jpg");
+    console.log("Title Scene")
+    this.load.image("titleSceneBackground", "./assets/titleScene.jpg")
   }
 
   /**
@@ -40,8 +40,8 @@ class TitleScene extends Phaser.Scene {
   create(data) {
     this.titleSceneBackgroundImage = this.add
       .sprite(1920 / 2, 1080 / 2, "titleSceneBackground")
-      .setScale(2.75);
-    this.titleSceneBackgroundImage.setScale(6);
+      .setScale(2.75)
+    this.titleSceneBackgroundImage.setScale(6)
   }
 
   /**
@@ -52,9 +52,9 @@ class TitleScene extends Phaser.Scene {
    */
   update(time, delta) {
     if (time > 6000) {
-      this.scene.switch("menuScene");
+      this.scene.switch("menuScene")
     }
   }
 }
 
-export default TitleScene;
+export default TitleScene
