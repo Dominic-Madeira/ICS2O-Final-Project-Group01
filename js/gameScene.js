@@ -55,6 +55,7 @@ class GameScene extends Phaser.Scene {
     // Jump function for the bird
     const keySpaceObj = this.input.keyboard.addKey("SPACE")
     const mouseClick = this.input.activePointer
+    // Jump if mouse clicked or spacebar pressed
     if (keySpaceObj.isDown === true || mouseClick.isDown === true) {
       if (this.jump === false) {
         // Jump
@@ -266,7 +267,7 @@ class GameScene extends Phaser.Scene {
     this.floor3.setDepth(3)
     this.createFloor()
 
-    // Get ready stuff
+    // Get ready images and text
     this.gameOver = false
     this.getReady = this.add.sprite(1920 / 2, 1080 / 2, "getReady")
     this.getReady.setDepth(5)
